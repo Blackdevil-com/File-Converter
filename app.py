@@ -47,7 +47,7 @@ class ConverterApp(QMainWindow):
             "Rotate PDF",
             "Watermark PDF",
             "Extract PDF Text",
-            "OCR PDF"
+            # "OCR PDF"
         ])
         self.sidebar.setFixedWidth(220)
         self.sidebar.currentRowChanged.connect(self.display_page)
@@ -360,18 +360,20 @@ class ConverterApp(QMainWindow):
                 if "filename=" in cd:
                     filename = cd.split("filename=")[-1].strip('"')
                 else:
+                    # Fallback based on conversion mode
                     if mode == "pdf_to_word":
                         filename = Path(input_files[0]).stem + ".docx"
-                    else: filename = Path(input_files[0]).stem + ".pdf"
+                    elif mode == "pdf_image":
+                        filename = Path(input_files[0]).stem + "_images.zip"
+                    elif mode == "images_to_pdf":
+                        filename = Path(input_files[0]).stem + ".pdf"
+                    else:
+                        filename = Path(input_files[0]).stem + ".pdf"
+
                 out_file = get_unique_filepath(downloads, filename)
                 with open(out_file, "wb") as f:
                     f.write(r.content)
                 input_attr.setText(f"Saved: {out_file}")
-            else:
-                try:
-                    input_attr.setText(str(r.json()))
-                except:
-                    input_attr.setText(f"Error: {r.text}")
 
         except Exception as e:
             input_attr.setText(f"Error: {e}")
