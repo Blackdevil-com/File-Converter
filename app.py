@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 import requests
@@ -7,7 +8,15 @@ from PySide6.QtWidgets import (
     QComboBox, QLineEdit
 )
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QIcon
 
+
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and PyInstaller"""
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 def get_unique_filepath(folder, filename):
     folder = Path(folder)
@@ -24,7 +33,8 @@ def get_unique_filepath(folder, filename):
 class ConverterApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Universal Doc Converter")
+        self.setWindowTitle("File Converter")
+        self.setWindowIcon(QIcon(resource_path("File_Converter_Logo.ico")))
         self.setGeometry(200, 100, 1200, 700)
 
         main_widget = QWidget()
@@ -52,6 +62,7 @@ class ConverterApp(QMainWindow):
         self.sidebar.setFixedWidth(220)
         self.sidebar.currentRowChanged.connect(self.display_page)
         main_layout.addWidget(self.sidebar)
+
 
         # ---------------- Main Panel ----------------
         self.stack = QStackedWidget()
@@ -382,5 +393,6 @@ class ConverterApp(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ConverterApp()
+    pixmap = QPixmap(resource_path("File_Converter_Logo.ico"))
     window.show()
     sys.exit(app.exec())
